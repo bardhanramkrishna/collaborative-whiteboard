@@ -26,12 +26,7 @@ export default function ShareModal({ roomId, onClose }) {
   const shareEmail = () => {
     const subject = "Join my whiteboard room";
     const body = `Hey! Join my collaborative whiteboard.\n\nRoom code: ${roomId}\nLink: ${shareUrl}`;
-
-    window.open(
-      `mailto:?subject=${encodeURIComponent(
-        subject
-      )}&body=${encodeURIComponent(body)}`
-    );
+    window.open(`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
   };
 
   return (
