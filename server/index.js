@@ -5,8 +5,8 @@ const { Server } = require("socket.io");
 const cors       = require("cors");
 const connectDB  = require("./config/db");
 
-const roomRoutes  = require("./routes/rooms");
-const boardRoutes = require("./routes/boards");
+const roomRoutes    = require("./routes/rooms");
+const boardRoutes   = require("./routes/boards");
 const socketHandler = require("./socket/socketHandler");
 
 connectDB();
@@ -19,7 +19,6 @@ const allowedOrigins = [
   process.env.CLIENT_URL,
 ].filter(Boolean);
 
-// Socket.IO — must be before express middleware
 const io = new Server(httpServer, {
   cors: {
     origin: allowedOrigins,
@@ -45,8 +44,37 @@ app.use(express.json());
 app.use("/api/rooms",  roomRoutes);
 app.use("/api/boards", boardRoutes);
 
+// ── Root route ─────────────────────────────────────────────
+app.get("/", (req, res) => {
+  res.json({
+    message: "🎨 DrawTogether Backend is running!",
+    status: "ok",
+    version: "1.0.0",
+    links: {
+      health:     "https://collaborative-whiteboard-nk5s.onrender.com/api/health",
+      frontend:   "https://drawtogether-frontend-5sd3.onrender.com",
+    },
+    endpoints: {
+      health:      "GET  /api/health",
+      createRoom:  "POST /api/rooms/create",
+      getRoom:     "GET  /api/rooms/:roomId",
+      joinRoom:    "POST /api/rooms/join",
+      saveBoard:   "POST /api/boards/save",
+      getBoard:    "GET  /api/boards/:roomId",
+      roomStats:   "GET  /api/rooms/stats/all",
+      boardStats:  "GET  /api/boards/stats/all",
+    },
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// ── Health check ───────────────────────────────────────────
 app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", timestamp: new Date().toISOString() });
+  res.json({
+    status: "ok",
+    message: "All systems operational",
+    timestamp: new Date().toISOString(),
+  });
 });
 
 const PORT = process.env.PORT || 5000;
